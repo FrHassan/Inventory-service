@@ -30,15 +30,13 @@ jobs:
 
     # Step to build Docker image
     - name: Build Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile
-        push: false  # Set to true to push the built image
+      run: |
+        docker build -t inventory-service-image:latest .
 
     # Step to tag the Docker image
     - name: Tag Docker image
-      run: docker tag inventory-service-image frhassan/imagesrepository:latest
+      run: |
+        docker tag inventory-service-image:latest frhassan/imagesrepository:latest
 
     # Step to publish Docker image to Docker Hub
     - name: Publish Docker image
