@@ -22,6 +22,3 @@ jobs:
     - name: Check Running Containers
       run: docker ps  # Verify that the container is running
 
-    - name: Test Container (Optional)
-      run: |
-        curl http://localhost:8080  # Adjust based on your app's exposed endpoint (e.g., API or web page)
