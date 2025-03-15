@@ -19,6 +19,7 @@ jobs:
         run: docker pull frhassan/imagesrepository:latest
 
       - name: Stop and Remove Existing Docker Container
+        shell: bash
         run: |
           if [ $(docker ps -q -f "name=myapp") ]; then
             docker stop myapp
