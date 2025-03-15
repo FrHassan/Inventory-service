@@ -1,42 +1,30 @@
-name: Deploy Docker Image on Local Machine
+name: Deploy Docker Image from Docker Hub (Self-Hosted Runner)
 
 on:
   workflow_run:
-    workflows: ["Node.js CI with Docker Build and Publish"]
+    workflows: ["Node.js CI with Docker Build and Publish"]  # CI workflow name
     types:
       - completed
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Runs on your local machine!
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only on success
+    runs-on: self-hosted  # Self-hosted runner where deployment happens
 
     steps:
+      - name: Checkout Repository (Optional)
+        uses: actions/checkout@v4
+
       - name: Pull Docker Image from Docker Hub
-        shell: pwsh
-        run: |
-          docker pull frhassan/imagesrepository:latest
+        run: docker pull frhassan/imagesrepository:latest
 
-      - name: Stop and Remove Previous Container (if exists)
-        shell: pwsh
+      - name: Stop Previous Container (Optional but recommended)
         run: |
-          $container = docker ps -aq -f name=my-local-container
-          if ($container) {
-            docker stop my-local-container
-            docker rm my-local-container
-          }
+          if [ $(docker ps -q -f name=myapp) ]; then
+            docker stop myapp
+            docker rm myapp
+          fi
 
-      - name: Run Docker Container Locally
-        shell: pwsh
+      - name: Run Docker Container
         run: |
-          docker run -d -p 8080:80 --name my-local-container frhassan/imagesrepository:latest
-
-      - name: Verify Running Containers
-        shell: pwsh
-        run: |
-          docker ps
-
-      - name: Check App Health (Optional)
-        shell: pwsh
-        run: |
-          Start-Sleep -Seconds 5
-          Invoke-WebRequest -Uri http://localhost:8080 -UseBasicParsing
+          docker run -d --name myapp -p 8080:80 frhassan/imagesrepository:latest
