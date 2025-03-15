@@ -12,10 +12,12 @@ jobs:
 
     steps:
       - name: Pull Docker Image from Docker Hub
+        shell: bash
         run: |
           docker pull frhassan/imagesrepository:latest
 
       - name: Stop and Remove Previous Container (if exists)
+        shell: bash
         run: |
           if [ $(docker ps -aq -f name=my-local-container) ]; then
             docker stop my-local-container
@@ -23,13 +25,16 @@ jobs:
           fi
 
       - name: Run Docker Container Locally
+        shell: bash
         run: |
           docker run -d -p 8080:80 --name my-local-container frhassan/imagesrepository:latest
 
       - name: Verify Running Containers
+        shell: bash
         run: docker ps
 
       - name: Check App Health (Optional)
+        shell: bash
         run: |
           echo "Waiting for the container to be ready..."
           sleep 5
