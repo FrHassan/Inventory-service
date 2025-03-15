@@ -19,11 +19,13 @@ jobs:
         run: docker pull frhassan/imagesrepository:latest
 
       - name: Stop Previous Container (Optional but recommended)
+        shell: pwsh  # Ensure PowerShell is used
         run: |
-          if [ $(docker ps -q -f name=myapp) ]; then
-            docker stop myapp
-            docker rm myapp
-          fi
+          # Stop and remove the previous container if it exists
+          if (docker ps -q -f "name=myapp") {
+              docker stop myapp
+              docker rm myapp
+          }
 
       - name: Run Docker Container
         run: |
