@@ -20,8 +20,12 @@ jobs:
 
       - name: Stop and Remove Existing Docker Container
         run: |
-          docker stop myapp
-          docker rm myapp
+          if [ $(docker ps -q -f "name=myapp") ]; then
+            docker stop myapp
+            docker rm myapp
+          else
+            echo "No existing container named 'myapp' found."
+          fi
 
       - name: Run Docker Container
         run: |
