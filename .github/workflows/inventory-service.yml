@@ -1,24 +1,36 @@
-name: Deploy Docker Image Locally
+name: Deploy Docker Image on Local Machine
 
 on:
   workflow_run:
-    workflows: ["Node.js CI with Docker Build and Publish"]  # Name of the CI workflow
+    workflows: ["Node.js CI with Docker Build and Publish"]
     types:
-      - completed  # Trigger CD when CI completes
+      - completed  # Trigger CD after CI completes
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # THIS makes it run on your local machine!
 
     steps:
-    - name: Pull Docker Image
-      run: |
-        docker pull frhassan/imagesrepository:latest  # Pull the image from Docker Hub
+      - name: Pull Docker Image from Docker Hub
+        run: |
+          docker pull frhassan/imagesrepository:latest
 
-    - name: Run Docker Container Locally
-      run: |
-        docker run -d -p 8080:80 frhassan/imagesrepository:latest  # Run container and expose port 8080
+      - name: Stop and Remove Previous Container (if exists)
+        run: |
+          if [ $(docker ps -aq -f name=my-local-container) ]; then
+            docker stop my-local-container
+            docker rm my-local-container
+          fi
 
-    - name: Check Running Containers
-      run: docker ps  # Verify that the container is running
+      - name: Run Docker Container Locally
+        run: |
+          docker run -d -p 8080:80 --name my-local-container frhassan/imagesrepository:latest
 
+      - name: Verify Running Containers
+        run: docker ps
+
+      - name: Check App Health (Optional)
+        run: |
+          echo "Waiting for the container to be ready..."
+          sleep 5
+          curl -v http://localhost:8080 || echo "App not responding yet!"
