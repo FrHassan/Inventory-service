@@ -1,0 +1,24 @@
+name: Deploy Docker Image Locally
+
+on:
+  workflow_run:
+    workflows: ["Node.js CI with Docker Build and Publish"]  # Name of the CI workflow
+    types:
+      - completed  # Trigger CD when CI completes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pull Docker Image
+      run: |
+        docker pull frhassan/imagesrepository:latest  # Pull the image from Docker Hub
+
+    - name: Run Docker Container Locally
+      run: |
+        docker run -d -p 8080:80 frhassan/imagesrepository:latest  # Run container and expose port 8080
+
+    - name: Check Running Containers
+      run: docker ps  # Verify that the container is running
+
