@@ -20,8 +20,8 @@ jobs:
 
       - name: Stop and Remove Existing Docker Container
         run: |
-          docker stop myapp || true  # Stop the container if running, ignore errors if it's not running
-          docker rm myapp || true    # Remove the container, ignore errors if it doesn't exist
+          docker stop myapp
+          docker rm myapp
 
       - name: Run Docker Container
         run: |
